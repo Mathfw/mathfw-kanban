@@ -2,13 +2,41 @@
   import { onMount } from "svelte"
   import Icon from "./lib/Icon.svelte";
   import {draggable, dropzone} from "./lib/dnd"
-
+  import { kanban } from "./lib/store";
 
   let backlog: Array<string> = [];
   let todo: Array<string> = [];
   let doing: Array<string> = [];
   let done: Array<string> = [];
-  
+
+  onMount(() => {
+    let localBacklog = localStorage.getItem("backlog")
+    let localTodo = localStorage.getItem("todo")
+    let localDoing = localStorage.getItem("doing")
+    let localDone = localStorage.getItem("done")
+    
+    if (localBacklog) {
+      backlog = JSON.parse(localBacklog)
+    }else {
+      localStorage.setItem("backlog", '[]')
+    }
+    if (localTodo) {
+      todo = JSON.parse(localTodo)
+    }else {
+      localStorage.setItem("todo", "[]")
+    }
+    if (localDoing) {
+      doing = JSON.parse(localDoing)
+    }else {
+      localStorage.setItem("doing", "[]")
+    }
+    if (localDone) {
+      done = JSON.parse(localDone)
+    }else {
+      localStorage.setItem("done", "[]")
+    }
+  })
+
   let backlogTitle: HTMLHeadingElement
   let todoTitle: HTMLHeadingElement
   let doingTitle: HTMLHeadingElement
@@ -185,24 +213,30 @@
           case "todo":
             todo.splice(parsed.index, 1) 
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
             backlog.push(parsed.item)
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
             console.log("todo ->", todo)
             console.log("backlog ->", backlog)
             break;
           case "doing":
             doing.splice(parsed.index, 1) 
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
             backlog.push(parsed.item)
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
             console.log("doing ->", doing)
             console.log("backlog ->", backlog)
             break;
           case "done":
             done.splice(parsed.index, 1) 
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
             backlog.push(parsed.item)
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
             console.log("done ->", done)
             console.log("backlog ->", backlog)
             break
@@ -222,6 +256,7 @@
           on:click={() => {
             backlog.splice(index, 1)
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
           }}>
             <Icon name="delete" width="70%" height="70%" stroke="currentColor" fill="none"/>
           </button>
@@ -241,6 +276,7 @@
           console.log(backlogInputValue)
           backlog.push(backlogInputValue)
           backlog = backlog
+          localStorage.setItem("backlog", JSON.stringify(backlog))
           backlogInputValue = ""
           addBacklog.close()
         }}>
@@ -277,24 +313,30 @@
           case "backlog":
             backlog.splice(parsed.index, 1)
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
             todo.push(parsed.item)
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
             console.log("backlog ->", backlog);
             console.log("todo ->", todo)
             break;
           case "doing":
             doing.splice(parsed.index, 1)
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
             todo.push(parsed.item)
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
             console.log("doing ->", doing);
             console.log("todo ->", todo)
             break
           case "done":
             done.splice(parsed.index, 1)
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
             todo.push(parsed.item)
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
             console.log("done ->", done);
             console.log("todo ->", todo)
             break
@@ -314,6 +356,7 @@
           on:click={() => {
             todo.splice(index, 1)
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
           }}>
             <Icon name="delete" width="70%" height="70%" stroke="currentColor" fill="none"/> 
           </button>
@@ -333,6 +376,7 @@
           console.log(todoInputValue)
           todo.push(todoInputValue)
           todo = todo
+          localStorage.setItem("todo", JSON.stringify(todo))
           todoInputValue = ""
           addTodo.close()
         }}>
@@ -369,8 +413,10 @@
           case "backlog":
             backlog.splice(parsed.index, 1);
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
             doing.push(parsed.item)
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
             console.log("backlog ->", backlog)
             console.log("doing ->", doing)
             break;

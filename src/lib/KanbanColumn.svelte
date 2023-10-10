@@ -1,56 +1,35 @@
 <script lang="ts">
     import { dropzone, draggable } from "./dnd";
-    import { clickOutside } from "./clickOutside";
     import type { kanbanItem } from "./types";
     import Icon from "./Icon.svelte";
+    import { kanban } from "./store";
 
-    export let title: string
-    export let list: Array<kanbanItem>
+    export let key: number
     
     let thisTitleElement: HTMLHeadingElement
     let thisAddElement: HTMLDialogElement
     
 </script>
 
-<div id="backlog" class="kanban-column" use:dropzone={{
+<div id={$kanban[key].name} class="kanban-column" use:dropzone={{
       on_dropzone(data) {
         console.log(data)
         let parsed = JSON.parse(data)
         console.log(parsed)
-        console.log("backlog");
-        
+        if (parsed.column !== $kanban[key].id) {
+          kanban.removeItem(parsed.column, parsed.id)
+          kanban.pushItem(key, parsed.item)
+        }
+       }
       }
-    }}>
-      <h2 bind:this={thisTitleElement} style="background-color: #EF476F">{title}</h2>
-      {#each list as item, index}
-        <div use:draggable={`{"item": "${item}", "index": ${index}, "column": "backlog"}`}>
-          <p>{item}</p>
-        </div>
-      {/each}
-      <button on:click={(e) => {
-        e.preventDefault()
-        console.log(addBacklog.open)
-        addBacklog.show()
-      }}>
-        <Icon class="icon" name="add-button-filled" width="90%" height="90%" fill="lightgray" />
-      </button>
-      <dialog bind:this={thisAddElement} use:clickOutside on:click_outside={handleClickOutside} >
-        <form>
-          <label>
-            <span>backlog</span>
-            <input type="text">
-          </label>
-          <button on:click={(e) => {
-            e.preventDefault()
-          }}>
-            add
-          </button>
-          <button on:click={(e) => {
-            e.preventDefault()
-            thisAddElement.close()
-          }}>
-            cancel
-          </button>
-        </form>
-      </dialog>
+  }> 
+  <h2></h2>
+  {#each $kanban[key].items as item (item.id)}
+    <div class="card" use:draggable={`{item: ${item}, id: ${item.id}}, column: ${item.columnId}`}>
+      <p>{item.content}</p>
     </div>
+    <button class="btnDelete">
+      <Icon name="delete" width="70%" height="70%" stroke="currentColor" fill="none"/>
+    </button>
+  {/each}
+</div>
