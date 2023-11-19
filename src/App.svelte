@@ -246,7 +246,17 @@
         }
       }
     }}>
-      <h2 bind:this={backlogTitle} style="background-color: #EF476F">backlog</h2>
+      <h2 bind:this={backlogTitle} style="background-color: #EF476F" 
+      on:dblclick={(e) => {
+        e.preventDefault()
+        backlogTitle.contentEditable = "true"
+      }}
+      on:blur={() => {
+        backlogTitle.contentEditable = "false"
+      }}
+      contenteditable="false">
+        backlog
+      </h2>
       {#each backlog as item, index}
         <div class="card-container">
           <div class="card" use:draggable={`{"item": "${item}", "index": ${index}, "column": "backlog"}`}>
@@ -423,16 +433,20 @@
           case "todo":
             todo.splice(parsed.index, 1);
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
             doing.push(parsed.item)
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
             console.log("todo ->", todo)
             console.log("doing ->", doing)
             break;
           case "done":
             done.splice(parsed.index, 1);
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
             doing.push(parsed.item)
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
             console.log("done ->", done)
             console.log("doing ->", doing)
             break;
@@ -452,6 +466,7 @@
           on:click={() => {
             doing.splice(index, 1)
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
           }}>
             <Icon name="delete" width="70%" height="70%" stroke="currentColor" fill="none"/> 
           </button>
@@ -471,6 +486,7 @@
           console.log(doingInputValue)
           doing.push(doingInputValue)
           doing = doing
+          localStorage.setItem("doing", JSON.stringify(doing))
           doingInputValue = ""
           addDoing.close()
         }}>
@@ -507,24 +523,30 @@
           case "backlog":
             backlog.splice(parsed.index, 1)
             backlog = backlog
+            localStorage.setItem("backlog", JSON.stringify(backlog))
             done.push(parsed.item)
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
             console.log("doing ->", doing);
             console.log("done ->", done)
             break;
           case "todo":
             todo.splice(parsed.index, 1)
             todo = todo
+            localStorage.setItem("todo", JSON.stringify(todo))
             done.push(parsed.item)
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
             console.log("todo ->", todo);
             console.log("done ->", done)
             break
           case "doing":
             doing.splice(parsed.index, 1)
             doing = doing
+            localStorage.setItem("doing", JSON.stringify(doing))
             done.push(parsed.item)
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
             console.log("doing ->", doing);
             console.log("done ->", done)
             break
@@ -544,6 +566,7 @@
           on:click={() => {
             done.splice(index, 1)
             done = done
+            localStorage.setItem("done", JSON.stringify(done))
           }}>
             <Icon name="delete" width="70%" height="70%" stroke="currentColor" fill="none"/> 
           </button>
@@ -563,6 +586,7 @@
           console.log(doneInputValue)
           done.push(doneInputValue)
           done = done
+          localStorage.setItem("done", JSON.stringify(done))
           doneInputValue = ""
           addDone.close()
         }}>
@@ -601,8 +625,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
   }
-
   .kanban-body {
     display: grid;
     grid-template-columns: repeat(4, 20em);
